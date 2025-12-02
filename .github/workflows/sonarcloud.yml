@@ -14,44 +14,46 @@ jobs:
   sonar-check:
     name: Sonar Check
     runs-on: windows-latest
+
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      # 1) BEGIN: SonarScanner for .NET
-      - name: SonarScanner Begin
+      - name: Install SonarScanner
+        shell: pwsh
         run: |
           dotnet tool install --global dotnet-sonarscanner
-          echo "$env:USERPROFILE\.dotnet\tools" >> $env:GITHUB_PATH
-          dotnet sonarscanner begin `
-          /k:"0neDistruktion_REengineering" `
-          /o:"0nedistruktion" `
-          /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-          /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" `
-          /d:sonar.cpd.cs.minimumTokens=40 `
-          /d:sonar.cpd.cs.minimumLines=5 `
-          /d:sonar.coverage.exclusions="**/Program.cs,**/Networking/TcpClientWrapper.cs,**/Networking/UdpClientWrapper.cs,**/Networking/ITcpClient.cs,**/Networking/IUdpClient.cs,**/Networking/BaseClientWrapper.cs,**/Migrations/**" `
-          /d:sonar.exclusions="**/bin/**,**/obj/**,**/sonarcloud.yml" `
-          /d:sonar.qualitygate.wait=true
-        shell: pwsh
+          echo "$env:USERPROFILE\.dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      # 2) BUILD
+      - name: SonarScanner Begin
+        shell: pwsh
+        run: |
+          dotnet sonarscanner begin `
+            /k:"0neDistruktion_REengineering" `
+            /o:"0nedistruktion" `
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
+            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" `
+            /d:sonar.exclusions=**/bin/**,**/obj/** `
+            /d:sonar.qualitygate.wait=true
+
       - name: Restore
         run: dotnet restore NetSdrClient.sln
+
       - name: Build
         run: dotnet build NetSdrClient.sln -c Release --no-restore
 
-      # 3) TESTS
       - name: Tests with coverage
+        shell: pwsh
         run: |
-          dotnet test NetSdrClient.sln -c Release --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-        shell: pwsh
+          dotnet test NetSdrClient.sln -c Release --no-build `
+            --collect:"XPlat Code Coverage" `
+            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
-      # 4) END: SonarScanner
       - name: SonarScanner End
-        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
         shell: pwsh
+        run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
