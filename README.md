@@ -1,13 +1,12 @@
 # Лабораторні з реінжинірингу (8×)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ppanchen_NetSdrClient&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ppanchen_NetSdrClient)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ppanchen_NetSdrClient&metric=coverage)](https://sonarcloud.io/summary/new_code?id=ppanchen_NetSdrClient)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ppanchen_NetSdrClient&metric=bugs)](https://sonarcloud.io/summary/new_code?id=ppanchen_NetSdrClient)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ppanchen_NetSdrClient&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=ppanchen_NetSdrClient)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=ppanchen_NetSdrClient&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=ppanchen_NetSdrClient)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=ppanchen_NetSdrClient&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=ppanchen_NetSdrClient)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=ppanchen_NetSdrClient&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=ppanchen_NetSdrClient)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ppanchen_NetSdrClient&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=ppanchen_NetSdrClient)
-
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=0neDistruktion_REengineering&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=0neDistruktion_REengineering)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=0neDistruktion_REengineering&metric=coverage)](https://sonarcloud.io/summary/new_code?id=0neDistruktion_REengineering)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=0neDistruktion_REengineering&metric=bugs)](https://sonarcloud.io/summary/new_code?id=0neDistruktion_REengineering)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=0neDistruktion_REengineering&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=0neDistruktion_REengineering)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=0neDistruktion_REengineering&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=0neDistruktion_REengineering)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=0neDistruktion_REengineering&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=0neDistruktion_REengineering)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=0neDistruktion_REengineering&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=0neDistruktion_REengineering)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=0neDistruktion_REengineering&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=0neDistruktion_REengineering)
 
 Цей репозиторій використовується для курсу **реінжиніринг ПЗ**. 
 Мета — провести комплексний реінжиніринг спадкового коду NetSdrClient, включаючи рефакторинг архітектури, покращення якості коду, впровадження сучасних практик розробки та автоматизацію процесів контролю якості через CI/CD пайплайни.
