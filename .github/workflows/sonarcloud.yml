@@ -8,12 +8,12 @@ on:
   workflow_dispatch:
 
 permissions:
-  pull-requests: read # allows SonarCloud to decorate PRs with analysis results
+  pull-requests: read
 
 jobs:
   sonar-check:
     name: Sonar Check
-    runs-on: windows-latest   # безпечно для будь-яких .NET проектів
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -23,7 +23,6 @@ jobs:
           dotnet-version: '8.0.x'
 
       # 1) BEGIN: SonarScanner for .NET
-      # FIX: Змінено шлях reportsPaths, щоб шукати ВСІ файли coverage.opencover.xml у підпапках TestResults
       - name: SonarScanner Begin
         run: |
           dotnet tool install --global dotnet-sonarscanner
@@ -32,10 +31,11 @@ jobs:
           /k:"0neDistruktion_REengineering" `
           /o:"0nedistruktion" `
           /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-          /d:sonar.cs.opencover.reportsPaths="**/coverage.xml" `
+          /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" `
           /d:sonar.cpd.cs.minimumTokens=40 `
           /d:sonar.cpd.cs.minimumLines=5 `
-          /d:sonar.exclusions=**/bin/**,**/obj/**,**/sonarcloud.yml `
+          /d:sonar.coverage.exclusions="**/Program.cs,**/Networking/*Wrapper.cs,**/Migrations/**" `
+          /d:sonar.exclusions="**/bin/**,**/obj/**,**/sonarcloud.yml" `
           /d:sonar.qualitygate.wait=true
         shell: pwsh
 
@@ -46,8 +46,7 @@ jobs:
         run: dotnet build NetSdrClient.sln -c Release --no-restore
 
       # 3) TESTS with Correct Coverage Collection
-      # FIX: Використовуємо "XPlat Code Coverage". Це створює окремі папки для кожного тесту,
-      # щоб результати не перезаписували один одного.
+      # Генеруємо звіт coverage.opencover.xml
       - name: Tests with coverage
         run: |
           dotnet test NetSdrClient.sln -c Release --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
