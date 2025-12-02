@@ -37,7 +37,7 @@ jobs:
             /k:"0neDistruktion_REengineering" `
             /o:"0nedistruktion" `
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-            /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" `
+            /d:sonar.cs.opencover.reportsPaths="**/coverage*.xml" `
             /d:sonar.exclusions=**/bin/**,**/obj/** `
             /d:sonar.qualitygate.wait=true
 
@@ -50,9 +50,13 @@ jobs:
       - name: Tests with coverage
         shell: pwsh
         run: |
-          dotnet test NetSdrClient.sln -c Release --no-build `
-            --collect:"XPlat Code Coverage" `
-            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          dotnet test NetSdrClient.sln -c Release --no-build --collect:"XPlat Code Coverage"
+
+      - name: Debug coverage files
+        shell: pwsh
+        run: |
+          Write-Host "Coverage files found:"
+          Get-ChildItem -Recurse -Filter *coverage* | Select-Object FullName
 
       - name: SonarScanner End
         shell: pwsh
