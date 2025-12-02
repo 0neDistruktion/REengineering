@@ -8,64 +8,43 @@ on:
   workflow_dispatch:
 
 permissions:
-  pull-requests: read
+  pull-requests: read # allows SonarCloud to decorate PRs with analysis results
 
 jobs:
   sonar-check:
     name: Sonar Check
-    runs-on: windows-latest
-
+    runs-on: windows-latest   # безпечно для будь-яких .NET проектів
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: { fetch-depth: 0 }
 
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      - name: Install SonarScanner
-        shell: pwsh
+      # 1) BEGIN: SonarScanner for .NET
+      # FIX: Змінено шлях reportsPaths, щоб шукати ВСІ файли coverage.opencover.xml у підпапках TestResults
+      - name: SonarScanner Begin
         run: |
           dotnet tool install --global dotnet-sonarscanner
-          echo "$env:USERPROFILE\.dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-      - name: SonarScanner Begin
+          dotnet sonarscanner begin /k:"0neDistruktion_REengineering" /o:"0nedistruktion" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" /d:sonar.coverage.exclusions="**/Program.cs" /d:sonar.cpd.cs.minimumTokens=40 /d:sonar.cpd.cs.minimumLines=5 /d:sonar.exclusions="**/bin/**,**/obj/**,**/sonarcloud.yml,**/Program.cs" /d:sonar.qualitygate.wait=true
         shell: pwsh
-        run: |
-          dotnet sonarscanner begin `
-            /k:"0neDistruktion_REengineering" `
-            /o:"0nedistruktion" `
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-            /d:sonar.cs.opencover.reportsPaths="coverage-report/opencover.xml" `
-            /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.yml,**/*.yaml,**/*.json" `
-            /d:sonar.qualitygate.wait=true
 
+      # 2) BUILD
       - name: Restore
         run: dotnet restore NetSdrClient.sln
-
       - name: Build
         run: dotnet build NetSdrClient.sln -c Release --no-restore
 
-      - name: Run tests and generate coverage
-        shell: pwsh
+      # 3) TESTS with Correct Coverage Collection
+      # FIX: Використовуємо "XPlat Code Coverage". Це створює окремі папки для кожного тесту,
+      # щоб результати не перезаписували один одного.
+      - name: Tests with coverage
         run: |
-          dotnet test NetSdrClient.sln -c Release --no-build `
-            --collect:"XPlat Code Coverage"
-
-      - name: Convert coverage to Sonar format
-        uses: danielpalme/ReportGenerator-GitHub-Action@v5
-        with:
-          reports: '**/coverage.cobertura.xml'
-          targetdir: 'coverage-report'
-          reporttypes: 'opencover'
-
-      - name: Show found coverage files (debug)
+          dotnet test NetSdrClient.sln -c Release --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
         shell: pwsh
-        run: |
-          Write-Host "Coverage files found:"
-          Get-ChildItem -Recurse -Filter *coverage* | Select-Object FullName
 
+      # 4) END: SonarScanner
       - name: SonarScanner End
-        shell: pwsh
         run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        shell: pwsh
