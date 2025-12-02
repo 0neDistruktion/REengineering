@@ -75,6 +75,7 @@ namespace EchoTcpServerTests
 
                 byte[] buffer = new byte[3];
                 
+                // FIX: Зберігаємо Task в змінну, щоб порівнювати посилання
                 var readValueTask = stream.ReadAsync(buffer);
                 var actualReadTask = readValueTask.AsTask();
                 

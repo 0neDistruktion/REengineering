@@ -147,6 +147,7 @@ namespace NetSdrClientAppTests
         [Test]
         public void GetHeader_ShouldThrowArgumentException_WhenMessageIsTooLong()
         {
+            // Створюємо масив, який більший за ліміт (8191 байт)
             var hugeParams = new byte[9000]; 
             
             Assert.Throws<ArgumentException>(() => 
