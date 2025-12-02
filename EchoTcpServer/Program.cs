@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using EchoTcpServerApp.Server;
 using EchoTcpServerApp.Client;
 
-// Додаємо namespace
 namespace EchoTcpServerApp
 {
     public class Program

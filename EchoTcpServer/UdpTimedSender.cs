@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-// Додаємо namespace
 namespace EchoTcpServerApp.Client
 {
     public class UdpTimedSender : IDisposable
@@ -12,7 +11,7 @@ namespace EchoTcpServerApp.Client
         private readonly string _host;
         private readonly int _port;
         private readonly UdpClient _udpClient;
-        private Timer _timer;
+        private Timer? _timer; // Nullable
 
         public UdpTimedSender(string host, int port)
         {
@@ -29,19 +28,21 @@ namespace EchoTcpServerApp.Client
             _timer = new Timer(SendMessageCallback, null, 0, intervalMilliseconds);
         }
 
-        ushort i = 0;
+        ushort _counter = 0;
 
-        private void SendMessageCallback(object state)
+        // Smell fix: state is nullable
+        private void SendMessageCallback(object? state)
         {
             try
             {
-                //dummy data
-                Random rnd = new Random();
                 byte[] samples = new byte[1024];
-                rnd.NextBytes(samples);
-                i++;
+                Random.Shared.NextBytes(samples);
+                _counter++;
 
-                byte[] msg = (new byte[] { 0x04, 0x84 }).Concat(BitConverter.GetBytes(i)).Concat(samples).ToArray();
+                byte[] msg = (new byte[] { 0x04, 0x84 })
+                             .Concat(BitConverter.GetBytes(_counter))
+                             .Concat(samples).ToArray();
+                             
                 var endpoint = new IPEndPoint(IPAddress.Parse(_host), _port);
 
                 _udpClient.Send(msg, msg.Length, endpoint);
@@ -61,8 +62,17 @@ namespace EchoTcpServerApp.Client
 
         public void Dispose()
         {
-            StopSending();
-            _udpClient.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                StopSending();
+                _udpClient.Dispose();
+            }
         }
     }
 }
