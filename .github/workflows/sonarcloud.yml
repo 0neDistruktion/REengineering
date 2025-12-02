@@ -37,8 +37,8 @@ jobs:
             /k:"0neDistruktion_REengineering" `
             /o:"0nedistruktion" `
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-            /d:sonar.cs.opencover.reportsPaths="**/coverage*.xml" `
-            /d:sonar.exclusions=**/bin/**,**/obj/** `
+            /d:sonar.cs.opencover.reportsPaths="coverage-report/opencover.xml" `
+            /d:sonar.exclusions="**/bin/**,**/obj/**,**/*.yml,**/*.yaml,**/*.json" `
             /d:sonar.qualitygate.wait=true
 
       - name: Restore
@@ -47,12 +47,20 @@ jobs:
       - name: Build
         run: dotnet build NetSdrClient.sln -c Release --no-restore
 
-      - name: Tests with coverage
+      - name: Run tests and generate coverage
         shell: pwsh
         run: |
-          dotnet test NetSdrClient.sln -c Release --no-build --collect:"XPlat Code Coverage"
+          dotnet test NetSdrClient.sln -c Release --no-build `
+            --collect:"XPlat Code Coverage"
 
-      - name: Debug coverage files
+      - name: Convert coverage to Sonar format
+        uses: danielpalme/ReportGenerator-GitHub-Action@v5
+        with:
+          reports: '**/coverage.cobertura.xml'
+          targetdir: 'coverage-report'
+          reporttypes: 'opencover'
+
+      - name: Show found coverage files (debug)
         shell: pwsh
         run: |
           Write-Host "Coverage files found:"
