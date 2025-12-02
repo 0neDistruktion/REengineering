@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
+// Додаємо namespace, щоб тести могли його бачити
 namespace EchoTcpServerApp.Server
 {
     public class EchoServer
