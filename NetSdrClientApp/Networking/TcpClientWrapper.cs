@@ -70,7 +70,6 @@ namespace NetSdrClientApp.Networking
 
         public async Task SendMessageAsync(byte[] data)
         {
-            // FIX: Перевірка, щоб не кидати помилку, якщо з'єднання розірвано
             if (_client == null || !Connected || _stream == null) 
             {
                 return; 
@@ -82,7 +81,7 @@ namespace NetSdrClientApp.Networking
             }
             catch (Exception)
             {
-                // Ігноруємо помилки запису
+                // Ignored: Connection might be lost during write
             }
         }
 
@@ -103,6 +102,7 @@ namespace NetSdrClientApp.Networking
                 }
                 catch
                 {
+                    // Ignored: Connection closed or cancelled
                     break;
                 }
             }
